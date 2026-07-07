@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador Pessoal 2026/2027</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #475569;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            background: var(--bg-card);
+            padding: 8px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.active {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-input);
+            color: var(--text);
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        /* Tasks */
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .task-item.completed {
+            opacity: 0.5;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .checkbox.checked {
+            background: var(--primary);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+        }
+
+        .task-text {
+            flex: 1;
+        }
+
+        .task-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            padding: 4px;
+            opacity: 0.6;
+        }
+
+        .delete-btn:hover {
+            opacity: 1;
+        }
+
+        /* Progress */
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-input);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: var(--bg-input);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Habits */
+        .habit-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .habit-days {
+            display: flex;
+            gap: 4px;
+        }
+
+        .habit-day {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .habit-day.completed {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .habit-streak {
+            font-size: 0.8rem;
+            color: var(--warning);
+        }
+
+        /* Goals */
+        .goal-item {
+            padding: 16px;
+            background: var(--bg-input);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .goal-title {
+            font-weight: 600;
+        }
+
+        .goal-deadline {
+            font-size: 0.8rem;
+            color: var(--warning);
+        }
+
+        .goal-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .goal-progress-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        /* Finance */
+        .finance-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .finance-card {
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .finance-card.income {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+        }
+
+        .finance-card.expense {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+        }
+
+        .finance-card.balance {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--primary);
+        }
+
+        .finance-amount {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .finance-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .transaction-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .transaction-icon.income {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .transaction-icon.expense {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .transaction-amount.income {
+            color: var(--success);
+        }
+
+        .transaction-amount.expense {
+            color: var(--danger);
+        }
+
+        /* Reflections */
+        .reflection-item {
+            padding: 16px;
+            background: var(--bg-input);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .reflection-date {
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .reflection-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Week selector */
+        .week-nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding: 4px 0;
+        }
+
+        .day-btn {
+            padding: 8px 12px;
+            border: none;
+            background: var(--bg-input);
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .day-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .day-btn.today {
+            border: 2px solid var(--primary);
+        }
+
+        .day-name {
+            font-size: 0.7rem;
+            display: block;
+        }
+
+        .day-num {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: slideUp 0.3s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .finance-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>📋 Organizador Pessoal</h1>
+        <p id="currentDate">2026/2027</p>
+    </header>
+
+    <main class="container">
+        <!-- Dashboard -->
+        <section id="dashboard" class="section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="tasksToday">0</div>
+                    <div class="stat-label">Tarefas Hoje</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="habitsStreak">0</div>
+                    <div class="stat-label">Dias de Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="goalsProgress">0%</div>
+                    <div class="stat-label">Metas Concluídas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="monthBalance">R$0</div>
+                    <div class="stat-label">Saldo do Mês</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">⚡ Próximas Tarefas</div>
+                <div id="upcomingTasks"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🎯 Metas em Andamento</div>
+                <div id="activeGoals"></div>
+            </div>
+        </section>
+
+        <!-- Tasks -->
+        <section id="tasks" class="section">
+            <div class="week-nav" id="weekNav"></div>
+            
+            <div class="card">
+                <div class="card-title">
+                    📝 Tarefas de <span id="selectedDayName">Hoje</span>
+                    <button class="btn btn-sm" onclick="openModal('task')" style="margin-left: auto;">+ Adicionar</button>
+                </div>
+                <div id="tasksList"></div>
+            </div>
+        </section>
+
+        <!-- Habits -->
+        <section id="habits" class="section">
+            <div class="card">
+                <div class="card-title">
+                    🔥 Meus Hábitos
+                    <button class="btn btn-sm" onclick="openModal('habit')" style="margin-left: auto;">+ Novo</button>
+                </div>
+                <div id="habitsList"></div>
+            </div>
+        </section>
+
+        <!-- Goals -->
+        <section id="goals" class="section">
+            <div class="card">
+                <div class="card-title">
+                    🎯 Minhas Metas
+                    <button class="btn btn-sm" onclick="openModal('goal')" style="margin-left: auto;">+ Nova</button>
+                </div>
+                <div id="goalsList"></div>
+            </div>
+        </section>
+
+        <!-- Finance -->
+        <section id="finance" class="section">
+            <div class="finance-summary">
+                <div class="finance-card income">
+                    <div class="finance-amount" id="totalIncome">R$0</div>
+                    <div class="finance-label">Receitas</div>
+                </div>
+                <div class="finance-card expense">
+                    <div class="finance-amount" id="totalExpense">R$0</div>
+                    <div class="finance-label">Despesas</div>
+                </div>
+                <div class="finance-card balance">
+                    <div class="finance-amount" id="totalBalance">R$0</div>
+                    <div class="finance-label">Saldo</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    💰 Transações
+                    <button class="btn btn-sm" onclick="openModal('transaction')" style="margin-left: auto;">+ Nova</button>
+                </div>
+                <div id="transactionsList"></div>
+            </div>
+        </section>
+
+        <!-- Reflections -->
+        <section id="reflections" class="section">
+            <div class="card">
+                <div class="card-title">
+                    📔 Reflexões Semanais
+                    <button class="btn btn-sm" onclick="openModal('reflection')" style="margin-left: auto;">+ Nova</button>
+                </div>
+                <div id="reflectionsList"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <button class="nav-btn active" onclick="showSection('dashboard')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Início
+        </button>
+        <button class="nav-btn" onclick="showSection('tasks')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3L22 4"/>
+                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+            </svg>
+            Tarefas
+        </button>
+        <button class="nav-btn" onclick="showSection('habits')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+            </svg>
+            Hábitos
+        </button>
+        <button class="nav-btn" onclick="showSection('goals')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="6"/>
+                <circle cx="12" cy="12" r="2"/>
+            </svg>
+            Metas
+        </button>
+        <button class="nav-btn" onclick="showSection('finance')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+            </svg>
+            Finanças
+        </button>
+        <button class="nav-btn" onclick="showSection('reflections')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+            </svg>
+            Reflexões
+        </button>
+    </nav>
+
+    <!-- Modals -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Adicionar</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <form id="modalForm"></form>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        const STORAGE_KEY = 'organizador_pessoal_2026';
+        
+        let data = {
+            tasks: [],
+            habits: [],
+            goals: [],
+            transactions: [],
+            reflections: [],
+            habitChecks: {}
+        };
+
+        // Load data
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                data = JSON.parse(saved);
+            }
+        }
+
+        // Save data
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // Initialize
+        loadData();
+
+        // Current state
+        let selectedDate = new Date();
+        let currentSection = 'dashboard';
+
+        // Format date
+        function formatDate(date) {
+            return date.toLocaleDateString('pt-BR', { 
+                weekday: 'long', 
+                day: 'numeric', 
+                month: 'long' 
+            });
+        }
+
+        // Update current date display
+        document.getElementById('currentDate').textContent = formatDate(new Date());
+
+        // Section navigation
+        function showSection(section) {
+            currentSection = section;
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+            document.querySelector(`[onclick="showSection('${section}')"]`).classList.add('active');
+            
+            renderSection(section);
+        }
+
+        // Render sections
+        function renderSection(section) {
+            switch(section) {
+                case 'dashboard': renderDashboard(); break;
+                case 'tasks': renderTasks(); break;
+                case 'habits': renderHabits(); break;
+                case 'goals': renderGoals(); break;
+                case 'finance': renderFinance(); break;
+                case 'reflections': renderReflections(); break;
+            }
+        }
+
+        // Dashboard
+        function renderDashboard() {
+            const today = new Date().toDateString();
+            const todayTasks = data.tasks.filter(t => new Date(t.date).toDateString() === today);
+            const completedToday = todayTasks.filter(t => t.completed).length;
+            
+            document.getElementById('tasksToday').textContent = `${completedToday}/${todayTasks.length}`;
+            
+            // Calculate streak
+            let streak = 0;
+            const checkDate = new Date();
+            while (true) {
+                const dateKey = checkDate.toDateString();
+                const allHabitsChecked = data.habits.length > 0 && 
+                    data.habits.every(h => data.habitChecks[`${h.id}_${dateKey}`]);
+                if (allHabitsChecked || (streak === 0 && dateKey === today)) {
+                    if (allHabitsChecked) streak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                    if (streak > 365) break;
+                } else if (streak > 0) {
+                    break;
+                } else {
+                    checkDate.setDate(checkDate.getDate() - 1);
+                    if (checkDate < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) break;
+                }
+            }
+            document.getElementById('habitsStreak').textContent = streak;
+            
+            // Goals progress
+            const completedGoals = data.goals.filter(g => g.progress >= 100).length;
+            const goalsPercent = data.goals.length > 0 ? Math.round((completedGoals / data.goals.length) * 100) : 0;
+            document.getElementById('goalsProgress').textContent = goalsPercent + '%';
+            
+            // Month balance
+            const currentMonth = new Date().getMonth();
+            const monthTransactions = data.transactions.filter(t => new Date(t.date).getMonth() === currentMonth);
+            const income = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const expense = monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            document.getElementById('monthBalance').textContent = 'R$' + (income - expense).toFixed(0);
+            
+            // Upcoming tasks
+            const upcoming = data.tasks
+                .filter(t => !t.completed && new Date(t.date) >= new Date())
+                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .slice(0, 3);
+            
+            document.getElementById('upcomingTasks').innerHTML = upcoming.length ? 
+                upcoming.map(t => `
+                    <div class="task-item">
+                        <div class="checkbox ${t.completed ? 'checked' : ''}" onclick="toggleTask('${t.id}')"></div>
+                        <span class="task-text">${t.title}</span>
+                        <span class="task-time">${new Date(t.date).toLocaleDateString('pt-BR')}</span>
+                    </div>
+                `).join('') :
+                '<div class="empty-state">Nenhuma tarefa pendente 🎉</div>';
+            
+            // Active goals
+            const activeGoals = data.goals.filter(g => g.progress < 100).slice(0, 3);
+            document.getElementById('activeGoals').innerHTML = activeGoals.length ?
+                activeGoals.map(g => `
+                    <div class="goal-item">
+                        <div class="goal-header">
+                            <span class="goal-title">${g.title}</span>
+                            <span class="goal-deadline">📅 ${new Date(g.deadline).toLocaleDateString('pt-BR')}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${g.progress}%"></div>
+                        </div>
+                        <div class="goal-progress-text">${g.progress}% concluído</div>
+                    </div>
+                `).join('') :
+                '<div class="empty-state">Adicione suas metas!</div>';
+        }
+
+        // Tasks
+        function renderTasks() {
+            // Week navigation
+            const weekNav = document.getElementById('weekNav');
+            const today = new Date();
+            const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            let html = '';
+            
+            for (let i = -3; i <= 3; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                const isToday = date.toDateString() === today.toDateString();
+                const isSelected = date.toDateString() === selectedDate.toDateString();
+                
+                html += `
+                    <button class="day-btn ${isSelected ? 'active' : ''} ${isToday ? 'today' : ''}" 
+                            onclick="selectDate('${date.toISOString()}')">
+                        <span class="day-name">${days[date.getDay()]}</span>
+                        <span class="day-num">${date.getDate()}</span>
+                    </button>
+                `;
+            }
+            weekNav.innerHTML = html;
+            
+            // Selected day name
+            document.getElementById('selectedDayName').textContent = 
+                selectedDate.toDateString() === today.toDateString() ? 'Hoje' :
+                formatDate(selectedDate);
+            
+            // Tasks list
+            const dayTasks = data.tasks.filter(t => 
+                new Date(t.date).toDateString() === selectedDate.toDateString()
+            ).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+            
+            document.getElementById('tasksList').innerHTML = dayTasks.length ?
+                dayTasks.map(t => `
+                    <div class="task-item ${t.completed ? 'completed' : ''}">
+                        <div class="checkbox ${t.completed ? 'checked' : ''}" onclick="toggleTask('${t.id}')"></div>
+                        <span class="task-text">${t.title}</span>
+                        ${t.time ? `<span class="task-time">${t.time}</span>` : ''}
+                        <button class="delete-btn" onclick="deleteTask('${t.id}')">🗑️</button>
+                    </div>
+                `).join('') :
+                '<div class="empty-state">Nenhuma tarefa para este dia</div>';
+        }
+
+        function selectDate(dateStr) {
+            selectedDate = new Date(dateStr);
+            renderTasks();
+        }
+
+        function toggleTask(id) {
+            const task = data.tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveData();
+                renderSection(currentSection);
+            }
+        }
+
+        function deleteTask(id) {
+            data.tasks = data.tasks.filter(t => t.id !== id);
+            saveData();
+            renderSection(currentSection);
+        }
+
+        // Habits
+        function renderHabits() {
+            const today = new Date();
+            const days = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                days.push(date);
+            }
+            const dayNames = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+            
+            document.getElementById('habitsList').innerHTML = data.habits.length ?
+                data.habits.map(h => {
+                    const streak = calculateHabitStreak(h.id);
+                    return `
+                        <div class="habit-item">
+                            <div>
+                                <div style="font-weight: 600">${h.icon || '⭐'} ${h.title}</div>
+                                <div class="habit-streak">🔥 ${streak} dias</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="habit-days">
+                                    ${days.map(d => {
+                                        const key = `${h.id}_${d.toDateString()}`;
+                                        const checked = data.habitChecks[key];
+                                        return `
+                                            <div class="habit-day ${checked ? 'completed' : ''}" 
+                                                 onclick="toggleHabit('${h.id}', '${d.toDateString()}')"
+                                                 title="${d.toLocaleDateString('pt-BR')}">
+                                                ${dayNames[d.getDay()]}
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                                <button class="delete-btn" onclick="deleteHabit('${h.id}')">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('') :
+                '<div class="empty-state">Adicione hábitos para acompanhar!</div>';
+        }
+
+        function calculateHabitStreak(habitId) {
+            let streak = 0;
+            const checkDate = new Date();
+            checkDate.setDate(checkDate.getDate() - 1);
+            
+            while (true) {
+                const key = `${habitId}_${checkDate.toDateString()}`;
+                if (data.habitChecks[key]) {
+                    streak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else {
+                    break;
+                }
+                if (streak > 365) break;
+            }
+            
+            // Check today
+            const todayKey = `${habitId}_${new Date().toDateString()}`;
+            if (data.habitChecks[todayKey]) streak++;
+            
+            return streak;
+        }
+
+        function toggleHabit(habitId, dateStr) {
+            const key = `${habitId}_${dateStr}`;
+            data.habitChecks[key] = !data.habitChecks[key];
+            saveData();
+            renderSection(currentSection);
+        }
+
+        function deleteHabit(id) {
+            data.habits = data.habits.filter(h => h.id !== id);
+            saveData();
+            renderSection(currentSection);
+        }
+
+        // Goals
+        function renderGoals() {
+            document.getElementById('goalsList').innerHTML = data.goals.length ?
+                data.goals.map(g => `
+                    <div class="goal-item">
+                        <div class="goal-header">
+                            <span class="goal-title">${g.title}</span>
+                            <button class="delete-btn" onclick="deleteGoal('${g.id}')">🗑️</button>
+                        </div>
+                        <div class="goal-description">${g.description || ''}</div>
+                        <div class="goal-deadline">📅 Prazo: ${new Date(g.deadline).toLocaleDateString('pt-BR')}</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${g.progress}%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                            <input type="range" min="0" max="100" value="${g.progress}" 
+                                   onchange="updateGoalProgress('${g.id}', this.value)"
+                                   style="flex: 1; margin-right: 12px;">
+                            <span class="goal-progress-text">${g.progress}%</span>
+                        </div>
+                    </div>
+                `).join('') :
+                '<div class="empty-state">Defina suas metas e conquiste!</div>';
+        }
+
+        function updateGoalProgress(id, value) {
+            const goal = data.goals.find(g => g.id === id);
+            if (goal) {
+                goal.progress = parseInt(value);
+                saveData();
+                renderSection(currentSection);
+            }
+        }
+
+        function deleteGoal(id) {
+            data.goals = data.goals.filter(g => g.id !== id);
+            saveData();
+            renderSection(currentSection);
+        }
+
+        // Finance
+        function renderFinance() {
+            const income = data.transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const expense = data.transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            
+            document.getElementById('totalIncome').textContent = 'R$' + income.toFixed(2);
+            document.getElementById('totalExpense').textContent = 'R$' + expense.toFixed(2);
+            document.getElementById('totalBalance').textContent = 'R$' + (income - expense).toFixed(2);
+            
+            const sorted = [...data.transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            document.getElementById('transactionsList').innerHTML = sorted.length ?
+                sorted.map(t => `
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-icon ${t.type}">
+                                ${t.type === 'income' ? '💰' : '💸'}
+                            </div>
+                            <div>
+                                <div style="font-weight: 500">${t.description}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted)">
+                                    ${new Date(t.date).toLocaleDateString('pt-BR')} • ${t.category || 'Outros'}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="transaction-amount ${t.type}">
+                                ${t.type === 'income' ? '+' : '-'}R$${t.amount.toFixed(2)}
+                            </span>
+                            <button class="delete-btn" onclick="deleteTransaction('${t.id}')">🗑️</button>
+                        </div>
+                    </div>
+                `).join('') :
+                '<div class="empty-state">Nenhuma transação registrada</div>';
+        }
+
+        function deleteTransaction(id) {
+            data.transactions = data.transactions.filter(t => t.id !== id);
+            saveData();
+            renderSection(currentSection);
+        }
+
+        // Reflections
+        function renderReflections() {
+            const sorted = [...data.reflections].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            document.getElementById('reflectionsList').innerHTML = sorted.length ?
+                sorted.map(r => `
+                    <div class="reflection-item">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div class="reflection-date">📅 Semana de ${new Date(r.date).toLocaleDateString('pt-BR')}</div>
+                            <button class="delete-btn" onclick="deleteReflection('${r.id}')">🗑️</button>
+                        </div>
+                        <div class="reflection-text"><strong>O que foi bom:</strong> ${r.good || '-'}</div>
+                        <div class="reflection-text" style="margin-top: 8px"><strong>O que melhorar:</strong> ${r.improve || '-'}</div>
+                        <div class="reflection-text" style="margin-top: 8px"><strong>Aprendizados:</strong> ${r.learned || '-'}</div>
+                    </div>
+                `).join('') :
+                '<div class="empty-state">Registre suas reflexões semanais</div>';
+        }
+
+        function deleteReflection(id) {
+            data.reflections = data.reflections.filter(r => r.id !== id);
+            saveData();
+            renderSection(currentSection);
+        }
+
+        // Modal
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modalTitle');
+            const form = document.getElementById('modalForm');
+            
+            const forms = {
+                task: {
+                    title: 'Nova Tarefa',
+                    html: `
+                        <label>Título</label>
+                        <input type="text" id="taskTitle" required placeholder="Ex: Estudar inglês">
+                        <label>Data</label>
+                        <input type="date" id="taskDate" value="${selectedDate.toISOString().split('T')[0]}">
+                        <label>Horário (opcional)</label>
+                        <input type="time" id="taskTime">
+                        <button type="submit" class="btn" style="width: 100%">Adicionar</button>
+                    `,
+                    onSubmit: () => {
+                        data.tasks.push({
+                            id: Date.now().toString(),
+                            title: document.getElementById('taskTitle').value,
+                            date: document.getElementById('taskDate').value,
+                            time: document.getElementById('taskTime').value,
+                            completed: false
+                        });
+                    }
+                },
+                habit: {
+                    title: 'Novo Hábito',
+                    html: `
+                        <label>Nome do hábito</label>
+                        <input type="text" id="habitTitle" required placeholder="Ex: Meditar 10 min">
+                        <label>Ícone (emoji)</label>
+                        <input type="text" id="habitIcon" placeholder="🧘" maxlength="2">
+                        <button type="submit" class="btn" style="width: 100%">Adicionar</button>
+                    `,
+                    onSubmit: () => {
+                        data.habits.push({
+                            id: Date.now().toString(),
+                            title: document.getElementById('habitTitle').value,
+                            icon: document.getElementById('habitIcon').value || '⭐'
+                        });
+                    }
+                },
+                goal: {
+                    title: 'Nova Meta',
+                    html: `
+                        <label>Título da meta</label>
+                        <input type="text" id="goalTitle" required placeholder="Ex: Aprender programação">
+                        <label>Descrição</label>
+                        <textarea id="goalDesc" rows="2" placeholder="Detalhes da meta..."></textarea>
+                        <label>Prazo</label>
+                        <input type="date" id="goalDeadline" required>
+                        <button type="submit" class="btn" style="width: 100%">Adicionar</button>
+                    `,
+                    onSubmit: () => {
+                        data.goals.push({
+                            id: Date.now().toString(),
+                            title: document.getElementById('goalTitle').value,
+                            description: document.getElementById('goalDesc').value,
+                            deadline: document.getElementById('goalDeadline').value,
+                            progress: 0
+                        });
+                    }
+                },
+                transaction: {
+                    title: 'Nova Transação',
+                    html: `
+                        <label>Tipo</label>
+                        <select id="transType">
+                            <option value="income">💰 Receita</option>
+                            <option value="expense">💸 Despesa</option>
+                        </select>
+                        <label>Descrição</label>
+                        <input type="text" id="transDesc" required placeholder="Ex: Salário">
+                        <label>Valor (R$)</label>
+                        <input type="number" id="transAmount" required step="0.01" min="0">
+                        <label>Categoria</label>
+                        <input type="text" id="transCat" placeholder="Ex: Alimentação">
+                        <label>Data</label>
+                        <input type="date" id="transDate" value="${new Date().toISOString().split('T')[0]}">
+                        <button type="submit" class="btn" style="width: 100%">Adicionar</button>
+                    `,
+                    onSubmit: () => {
+                        data.transactions.push({
+                            id: Date.now().toString(),
+                            type: document.getElementById('transType').value,
+                            description: document.getElementById('transDesc').value,
+                            amount: parseFloat(document.getElementById('transAmount').value),
+                            category: document.getElementById('transCat').value,
+                            date: document.getElementById('transDate').value
+                        });
+                    }
+                },
+                reflection: {
+                    title: 'Nova Reflexão',
+                    html: `
+                        <label>Semana de</label>
+                        <input type="date" id="reflectionDate" value="${new Date().toISOString().split('T')[0]}">
+                        <label>O que foi bom esta semana?</label>
+                        <textarea id="reflectionGood" rows="2" placeholder="Conquistas, momentos positivos..."></textarea>
+                        <label>O que posso melhorar?</label>
+                        <textarea id="reflectionImprove" rows="2" placeholder="Pontos de melhoria..."></textarea>
+                        <label>O que aprendi?</label>
+                        <textarea id="reflectionLearned" rows="2" placeholder="Lições, insights..."></textarea>
+                        <button type="submit" class="btn" style="width: 100%">Salvar</button>
+                    `,
+                    onSubmit: () => {
+                        data.reflections.push({
+                            id: Date.now().toString(),
+                            date: document.getElementById('reflectionDate').value,
+                            good: document.getElementById('reflectionGood').value,
+                            improve: document.getElementById('reflectionImprove').value,
+                            learned: document.getElementById('reflectionLearned').value
+                        });
+                    }
+                }
+            };
+            
+            const config = forms[type];
+            title.textContent = config.title;
+            form.innerHTML = config.html;
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                config.onSubmit();
+                saveData();
+                closeModal();
+                renderSection(currentSection);
+            };
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') closeModal();
+        });
+
+        // Initial render
+        renderDashboard();
+    </script>
+</body>
+</html>
